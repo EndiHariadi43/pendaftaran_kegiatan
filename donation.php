@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Assuming you have a setup for Midtrans, using their PHP library
     require_once dirname(__FILE__) . '/Midtrans.php';
     \Midtrans\Config::$clientKey = 'Mid-client-mF8314ZSt8TFp6bN';
-    \Midtrans\Config::$isProduction = false;
+    \Midtrans\Config::$isProduction = true;
 
     $transaction_details = array(
         'order_id' => rand(),
