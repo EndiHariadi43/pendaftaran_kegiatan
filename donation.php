@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Integrate with Midtrans here
     // Assuming you have a setup for Midtrans, using their PHP library
     require_once dirname(__FILE__) . '/Midtrans.php';
-    \Midtrans\Config::$serverKey = 'your-server-key';
+    \Midtrans\Config::$clientKey = 'Mid-client-mF8314ZSt8TFp6bN';
     \Midtrans\Config::$isProduction = false;
 
     $transaction_details = array(
@@ -24,8 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     );
 
     try {
-        $snapToken = \Midtrans\Snap::getSnapToken($transaction);
-        echo json_encode(['snapToken' => $snapToken]);
+        $snapToken = \Midtrans\Snap::getSnapToken($transaction);       echo json_encode(['snapToken' => $snapToken]);
     } catch (Exception $e) {
         echo json_encode(['error' => $e->getMessage()]);
     }
@@ -36,8 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html>
 <head>
     <title>Donation</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="your-client-key"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-mF8314ZSt8TFp6bN"></script>
 </head>
 <body>
 <div class="container">
