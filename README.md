@@ -4,6 +4,6 @@ Gunakan dengan bijak.
 
 Cara menjalankan:
 
-Unduh repositori menggunakan git atau unduh file zip
-Upload ke direktorat root web atau sampe
-Konfigurasi database: upload file web.db ke database
+1. Unduh repositori menggunakan git atau unduh file zip
+2. Upload ke direktorat root web atau xampp/sejenisnya localhost
+3. Konfigurasi database: upload file web.db ke database
