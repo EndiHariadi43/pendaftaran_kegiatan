@@ -1,108 +1,57 @@
-<nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Left navbar links -->
-    <ul class="navbar-nav">
-        <li class="nav-item">
-            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-        </li>
-        <li class="nav-item d-none d-sm-inline-block">
-            <a href="index.php" class="nav-link">Home</a>
-        </li>
-        <?php if (isset($_SESSION['loggedin'])): ?>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a href="profile.php" class="nav-link">Profile</a>
-            </li>
-            <?php if ($_SESSION['role'] == 'admin'): ?>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="admin_dashboard.php" class="nav-link">Admin Dashboard</a>
-                </li>
-            <?php endif; ?>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a href="logout.php" class="nav-link">Logout</a>
-            </li>
-        <?php else: ?>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a href="login.php" class="nav-link">Login</a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a href="register.php" class="nav-link">Register</a>
-            </li>
-        <?php endif; ?>
-    </ul>
+<?php
+session_start();
+include 'config.php';
 
-    <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">
-        <!-- Navbar Search -->
-        <li class="nav-item">
-            <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                <i class="fas fa-search"></i>
-            </a>
-            <div class="navbar-search-block">
-                <form class="form-inline">
-                    <div class="input-group input-group-sm">
-                        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-                        <div class="input-group-append">
-                            <button class="btn btn-navbar" type="submit">
-                                <i class="fas fa-search"></i>
-                            </button>
-                            <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </li>
-        <!-- Notifications Dropdown Menu -->
-        <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="far fa-bell"></i>
-                <span class="badge badge-warning navbar-badge">15</span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <span class="dropdown-header">15 Notifications</span>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-envelope mr-2"></i> 4 new messages
-                    <span class="float-right text-muted text-sm">3 mins</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-users mr-2"></i> 8 friend requests
-                    <span class="float-right text-muted text-sm">12 hours</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-file mr-2"></i> 3 new reports
-                    <span class="float-right text-muted text-sm">2 days</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-            </div>
-        </li>
-        <!-- User Dropdown Menu -->
-        <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="far fa-user"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <?php if (isset($_SESSION['loggedin'])): ?>
-                    <a href="profile.php" class="dropdown-item">
-                        <i class="fas fa-user mr-2"></i> Profile
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="logout.php" class="dropdown-item">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                    </a>
-                <?php else: ?>
-                    <a href="login.php" class="dropdown-item">
-                        <i class="fas fa-sign-in-alt mr-2"></i> Login
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="register.php" class="dropdown-item">
-                        <i class="fas fa-user-plus mr-2"></i> Register
-                    </a>
+// Ambil foto profil pengguna jika sudah login
+$user_photo = '';
+if (isset($_SESSION['loggedin'])) {
+    $user_id = $_SESSION['user_id'];
+    $stmt = $conn->prepare("SELECT photo FROM users WHERE id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $user_photo = $row['photo'];
+    }
+    $stmt->close();
+}
+?>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="index.php"><img src="path/to/your/logo.png" alt="Logo" height="30"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.php">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="events.php">Events</a>
+                </li>
+                <?php if (isset($_SESSION['loggedin'])) : ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.php">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout.php">Logout</a>
+                    </li>
+                <?php else : ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.php">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.php">Register</a>
+                    </li>
                 <?php endif; ?>
-            </div>
-        </li>
-    </ul>
+            </ul>
+            <?php if (isset($_SESSION['loggedin']) && !empty($user_photo)) : ?>
+                <img src="<?php echo htmlspecialchars($user_photo); ?>" alt="Profile Photo" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+            <?php endif; ?>
+        </div>
+    </div>
 </nav>
