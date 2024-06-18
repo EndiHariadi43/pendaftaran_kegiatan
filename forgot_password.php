@@ -3,21 +3,53 @@ include 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
-    $new_password = bin2hex(random_bytes(4));
-    $hashed_password = password_hash($new_password, PASSWORD_BCRYPT);
 
-    $sql = "UPDATE users SET password='$hashed_password' WHERE email='$email'";
-
-    if ($conn->query($sql) === TRUE) {
-        // send email with new password (here we just display it)
-        echo "New password is: $new_password";
-    } else {
-        echo "Error updating password: " . $conn->error;
+    // Validasi email
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "Invalid email format.";
+        exit;
     }
 
-    $conn->close();
+    // Cek apakah email ada dalam database
+    $stmt = $conn->prepare("SELECT id, username FROM users WHERE email=?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows == 0) {
+        echo "Email not found.";
+        exit;
+    }
+
+    $user = $result->fetch_assoc();
+    $user_id = $user['id'];
+    $username = $user['username'];
+
+    // Generate token unik
+    $token = bin2hex(random_bytes(32));
+
+    // Simpan token ke dalam database bersamaan dengan waktu kadaluwarsa
+    $expiry_date = date('Y-m-d H:i:s', strtotime('+1 hour'));
+    $stmt = $conn->prepare("UPDATE users SET reset_token=?, token_expiry=? WHERE id=?");
+    $stmt->bind_param("ssi", $token, $expiry_date, $user_id);
+    $stmt->execute();
+    $stmt->close();
+
+    // Kirim email reset password ke pengguna
+    $reset_link = "http://example.com/reset_password.php?token=" . $token;
+    $to = $email;
+    $subject = "Reset your password";
+    $message = "Hello $username,\n\nYou have requested to reset your password. Please click the link below to reset your password:\n\n$reset_link\n\nIf you did not request this, please ignore this email.";
+    $headers = "From: your_email@example.com";
+
+    if (mail($to, $subject, $message, $headers)) {
+        echo "Password reset link has been sent to your email.";
+    } else {
+        echo "Failed to send reset email. Please try again later.";
+    }
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,13 +59,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 <div class="container">
     <h2>Forgot Password</h2>
-    <form method="post" action="forgot_password.php">
+    <form method="post">
         <div class="mb-3">
             <label for="email" class="form-label">Email address</label>
             <input type="email" class="form-control" id="email" name="email" required>
         </div>
-        <button type="submit" class="btn btn-primary">Reset Password</button>
+        <button type="submit" class="btn btn-primary">Send Reset Link</button>
     </form>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
