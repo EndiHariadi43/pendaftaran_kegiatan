@@ -1,0 +1,4 @@
+mkdir uploads
+chmod 755 uploads
+
+tambahkan folder uploads dan jalankan kode diatas
